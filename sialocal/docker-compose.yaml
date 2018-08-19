@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  rabbit:
+    image: "rabbitmq:3-management"
+    hostname: "rabbitmq"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  siaworker:
+    image: "siaworker:latest"
+    environment:
+      IP_USER: 'admin'
+      IP_PASSWD: 'Password1337'
+      IP_URL: "http://31.208.25.104:8364/ISAPI/Event/notification/alertstream"
+      RABBIT_USER: 'guest'
+      RABBIT_PASSWD: 'guest'
+      RABBIT_URL: 'rabbit'
+      RABBIT_PORT: 5672
+    depends_on:
+      - "rabbit"
+    restart: on-failure
+
+  siagw:
+    image: "siagw:latest"
+    environment:
+      RABBIT_USER: 'guest'
+      RABBIT_PASSWD: 'guest'
+      RABBIT_URL: 'rabbit'
+      RABBIT_PORT: 5672
+    depends_on:
+      - "rabbit"
+    restart: on-failure
